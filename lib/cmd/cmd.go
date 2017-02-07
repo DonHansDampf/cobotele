@@ -5,7 +5,25 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
+
+// ComicItem is a struct which defines a fetched comic.
+type ComicItem struct {
+	Title      string
+	PictureURL string
+	SiteName   string
+	Date       time.Time
+}
+
+// comicSiteTraits defines a comic-site. The number of
+// fetched comics in one rune is declared in ComicNum.
+// This is importand for calculating the channel size.
+type ComicSiteTraits struct {
+	SiteName string
+	SiteURL  string
+	ComicNum int
+}
 
 var verbose bool
 
@@ -44,5 +62,12 @@ func printHelpText() {
 func PrintVerbose(msg string) {
 	if verbose == true {
 		log.Println(msg)
+	}
+}
+
+// CatchError prints out the given error.
+func CatchError(err error) {
+	if err != nil {
+		log.Fatalln(err)
 	}
 }

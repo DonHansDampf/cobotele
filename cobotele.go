@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/donhansdampf/cobotele/lib/cmd"
+	"github.com/donhansdampf/cobotele/lib/cobo"
 	"log"
 )
 
@@ -13,5 +13,5 @@ func main() {
 			"Please use one via 'cobotele --token=TOKEN'.")
 	}
 
-	fmt.Println("Test")
+	cobo.Start()
 }

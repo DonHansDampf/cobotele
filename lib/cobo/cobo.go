@@ -1,38 +1,31 @@
 package cobo
 
 import (
-	"time"
+	"fmt"
+	"github.com/donhansdampf/cobotele/lib/cmd"
+	"github.com/donhansdampf/cobotele/lib/poorlydrawnlines"
 )
-
-// ComicItem is a struct which defines a fetched comic.
-type ComicItem struct {
-	Title      string
-	PictureURL string
-	SiteName   string
-	Date       time.Time
-}
-
-// comicSiteTraits defines a comic-site. The number of
-// fetched comics in one rune is declared in ComicNum.
-// This is importand for calculating the channel size.
-type comicSiteTraits struct {
-	SiteName string
-	SiteURL  string
-	ComicNum int
-}
 
 // Start launches the fetching process.
 func Start() {
 	comicSitesList := createComicSiteList()
 	comicNumSum := sumComicNum(comicSitesList)
 
-	comicQueue := make(chan ComicItem, comicNumSum)
+	comicQueue := make(chan *cmd.ComicItem, comicNumSum)
+
+	go poorlydrawnlines.GetComic(comicQueue)
+
+	for i := 0; i < comicNumSum; i++ {
+		comic := <-comicQueue
+		logMsg := fmt.Sprintf("Fetched Comic: %s", comic)
+		cmd.PrintVerbose(logMsg)
+	}
 }
 
-func createComicSiteList() []*comicSiteTraits {
-	comicSiteList := []*comicSiteTraits{}
+func createComicSiteList() []*cmd.ComicSiteTraits {
+	comicSiteList := []*cmd.ComicSiteTraits{}
 
-	poorlyDrawnTraits := &comicSiteTraits{
+	poorlyDrawnTraits := &cmd.ComicSiteTraits{
 		SiteName: "PoorlyDrawnLines",
 		SiteURL:  "http://poorlydrawnlines.com",
 		ComicNum: 10,
@@ -41,10 +34,16 @@ func createComicSiteList() []*comicSiteTraits {
 
 	// Repeat for other comic-Sites. Way to automate this better?
 
+	for _, comicSite := range comicSiteList {
+		logMsg := fmt.Sprintf("Added comic %s to list.",
+			comicSite.SiteName)
+		cmd.PrintVerbose(logMsg)
+	}
+
 	return comicSiteList
 }
 
-func sumComicNum(comicSitesTraits []*comicSiteTraits) int {
+func sumComicNum(comicSitesTraits []*cmd.ComicSiteTraits) int {
 	var comicNumSum int
 
 	for _, comicSiteTraits := range comicSitesTraits {
