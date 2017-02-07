@@ -3,14 +3,17 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 )
 
+var verbose bool
+
 // GetFlags returns the Telegram-Token provided by the flag "token"
-func GetFlags() (string, bool) {
+func GetFlags() string {
 	telegramToken := flag.String("token", "none", "Token for Telegram-Bot")
 	helpBool := flag.Bool("h", false, "Show help.")
-	verboseBool := flag.Bool("v", false, "Enable verbose Logging.")
+	flag.BoolVar(&verbose, "v", false, "Enable verbose Logging.")
 
 	flag.Parse()
 
@@ -18,7 +21,7 @@ func GetFlags() (string, bool) {
 		printHelpText()
 	}
 
-	return *telegramToken, *verboseBool
+	return *telegramToken
 }
 
 func printHelpText() {
@@ -35,4 +38,11 @@ func printHelpText() {
 		"shows this help",
 	)
 	os.Exit(2)
+}
+
+// PrintVerbose prints out log msg if flag "verbose" is set.
+func PrintVerbose(msg string) {
+	if verbose == true {
+		log.Println(msg)
+	}
 }

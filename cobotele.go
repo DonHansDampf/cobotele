@@ -7,11 +7,11 @@ import (
 )
 
 func main() {
-	telegramToken, verboseBool := cmd.GetFlags()
+	telegramToken := cmd.GetFlags()
 	if telegramToken == "none" {
-		log.Fatalln("No token provided. Please use one via 'cobotele --token=TOKEN'.")
+		log.Fatalln("No token provided." +
+			"Please use one via 'cobotele --token=TOKEN'.")
 	}
 
-	fmt.Println("Token:", telegramToken)
-	fmt.Println("Verbose:", verboseBool)
+	fmt.Println("Test")
 }
