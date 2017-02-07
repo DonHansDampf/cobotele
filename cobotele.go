@@ -13,5 +13,5 @@ func main() {
 			"Please use one via 'cobotele --token=TOKEN'.")
 	}
 
-	cobo.Start()
+	cobo.Start(telegramToken)
 }

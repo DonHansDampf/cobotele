@@ -6,10 +6,14 @@ import (
 	"github.com/donhansdampf/cobotele/lib/cmd"
 	"github.com/donhansdampf/cobotele/lib/db"
 	"github.com/donhansdampf/cobotele/lib/poorlydrawnlines"
+	"github.com/donhansdampf/cobotele/lib/telegram"
+	"github.com/tucnak/telebot"
 )
 
 // Start launches the fetching process.
-func Start() {
+func Start(telegramToken string) {
+	bot, _ := telegram.New(telegramToken)
+
 	comicSitesList := createComicSiteList()
 	comicNumSum := sumComicNum(comicSitesList)
 
@@ -22,7 +26,7 @@ func Start() {
 		logMsg := fmt.Sprintf("Fetched Comic: %s", comic)
 		cmd.PrintVerbose(logMsg)
 
-		handleComicItem(comic)
+		handleComicItem(comic, bot)
 
 	}
 }
@@ -59,7 +63,7 @@ func sumComicNum(comicSitesTraits []*cmd.ComicSiteTraits) int {
 	return comicNumSum
 }
 
-func handleComicItem(comicItem *cmd.ComicItem) {
+func handleComicItem(comicItem *cmd.ComicItem, bot *telebot.Bot) {
 	comicItemBucket, err := db.GetComicItemBucket(comicItem.Title, comicItem.SiteName)
 
 	if err == bolt.ErrBucketExists {
@@ -83,7 +87,8 @@ func handleComicItem(comicItem *cmd.ComicItem) {
 	filepath, err := db.DownloadComicPicture(comicItem.PictureURL, comicItem.SiteName)
 	cmd.CatchError(err)
 
-	fmt.Print(filepath)
-	// Send to telegramGroup.
+	// Send Comic to Telegram Group.
+	err = telegram.SendComic(bot, 88888, comicItem.Title, filepath)
+	cmd.CatchError(err)
 	return
 }
