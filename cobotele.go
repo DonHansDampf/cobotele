@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/donhansdampf/cobotele/lib"
+	"github.com/donhansdampf/cobotele/lib/cmd"
 	"log"
 )
 
