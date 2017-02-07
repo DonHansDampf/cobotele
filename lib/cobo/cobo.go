@@ -80,7 +80,10 @@ func handleComicItem(comicItem *cmd.ComicItem) {
 	cmd.CatchError(err)
 
 	// Download pictureSRC to disk.
+	filepath, err := db.DownloadComicPicture(comicItem.PictureURL, comicItem.SiteName)
+	cmd.CatchError(err)
+
+	fmt.Print(filepath)
 	// Send to telegramGroup.
-	fmt.Println(comicItemBucket)
 	return
 }

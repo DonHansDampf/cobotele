@@ -2,7 +2,11 @@ package db
 
 import (
 	"github.com/boltdb/bolt"
+	"io"
 	"log"
+	"net/http"
+	"os"
+	"path"
 	"time"
 )
 
@@ -70,4 +74,35 @@ func InsertComicItem(comicItemBucket *bolt.Bucket, title string, pictureURL stri
 	})
 
 	return nil
+}
+
+// DownloadComicPicture loads comic to disk.
+func DownloadComicPicture(pictureSRC string, comicSiteName string) (string, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	filefolder := path.Join(pwd, "db", comicSiteName)
+	_ = os.MkdirAll(filefolder, os.ModePerm)
+	filepath := path.Join(filefolder, path.Base(pictureSRC))
+
+	out, err := os.Create(filepath)
+	if err != nil {
+		return "", err
+	}
+	defer out.Close()
+
+	resp, err := http.Get(pictureSRC)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return filepath, nil
 }
