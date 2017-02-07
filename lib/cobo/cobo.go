@@ -23,15 +23,16 @@ type comicSiteTraits struct {
 
 // Start launches the fetching process.
 func Start() {
+	comicSitesList := createComicSiteList()
+	comicNumSum := sumComicNum(comicSitesList)
 
-	comicQueue := make(chan ComicItem)
-
+	comicQueue := make(chan ComicItem, comicNumSum)
 }
 
 func createComicSiteList() []*comicSiteTraits {
 	comicSiteList := []*comicSiteTraits{}
 
-	poorlyDrawnTraits := comicSiteTraits{
+	poorlyDrawnTraits := &comicSiteTraits{
 		SiteName: "PoorlyDrawnLines",
 		SiteURL:  "http://poorlydrawnlines.com",
 		ComicNum: 10,
@@ -43,11 +44,11 @@ func createComicSiteList() []*comicSiteTraits {
 	return comicSiteList
 }
 
-func sumComicNum([]*comicSiteTraits) int {
+func sumComicNum(comicSitesTraits []*comicSiteTraits) int {
 	var comicNumSum int
 
-	for _, comicSite := range comicSiteTraits {
-		comicNumSum += comicSite.ComicNum
+	for _, comicSiteTraits := range comicSitesTraits {
+		comicNumSum += comicSiteTraits.ComicNum
 	}
 
 	return comicNumSum
