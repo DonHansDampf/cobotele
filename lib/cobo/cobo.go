@@ -69,7 +69,16 @@ func handleComicItem(comicItem *cmd.ComicItem) {
 		return
 	}
 
-	// Insert Informations into comicItemBucket
+	// Insert Informations into comicItemBucket.
+	err = db.InsertComicItem(
+		comicItemBucket,
+		comicItem.Title,
+		comicItem.PictureURL,
+		comicItem.SiteName,
+		comicItem.Date,
+	)
+	cmd.CatchError(err)
+
 	// Download pictureSRC to disk.
 	// Send to telegramGroup.
 	fmt.Println(comicItemBucket)
