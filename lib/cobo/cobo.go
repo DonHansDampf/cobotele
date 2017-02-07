@@ -2,7 +2,9 @@ package cobo
 
 import (
 	"fmt"
+	"github.com/boltdb/bolt"
 	"github.com/donhansdampf/cobotele/lib/cmd"
+	"github.com/donhansdampf/cobotele/lib/db"
 	"github.com/donhansdampf/cobotele/lib/poorlydrawnlines"
 )
 
@@ -19,6 +21,9 @@ func Start() {
 		comic := <-comicQueue
 		logMsg := fmt.Sprintf("Fetched Comic: %s", comic)
 		cmd.PrintVerbose(logMsg)
+
+		handleComicItem(comic)
+
 	}
 }
 
@@ -31,6 +36,7 @@ func createComicSiteList() []*cmd.ComicSiteTraits {
 		ComicNum: 10,
 	}
 	comicSiteList = append(comicSiteList, poorlyDrawnTraits)
+	_ = poorlyDrawnTraits.Bucket()
 
 	// Repeat for other comic-Sites. Way to automate this better?
 
@@ -51,4 +57,21 @@ func sumComicNum(comicSitesTraits []*cmd.ComicSiteTraits) int {
 	}
 
 	return comicNumSum
+}
+
+func handleComicItem(comicItem *cmd.ComicItem) {
+	comicItemBucket, err := db.GetComicItemBucket(comicItem.Title, comicItem.SiteName)
+
+	if err == bolt.ErrBucketExists {
+		logMsg := fmt.Sprintf("Bucket for Comic '%s' already exists. Skipped.",
+			comicItem.Title)
+		cmd.PrintVerbose(logMsg)
+		return
+	}
+
+	// Insert Informations into comicItemBucket
+	// Download pictureSRC to disk.
+	// Send to telegramGroup.
+	fmt.Println(comicItemBucket)
+	return
 }

@@ -3,6 +3,8 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/boltdb/bolt"
+	"github.com/donhansdampf/cobotele/lib/db"
 	"log"
 	"os"
 	"time"
@@ -16,13 +18,20 @@ type ComicItem struct {
 	Date       time.Time
 }
 
-// comicSiteTraits defines a comic-site. The number of
+// ComicSiteTraits defines a comic-site. The number of
 // fetched comics in one rune is declared in ComicNum.
 // This is importand for calculating the channel size.
 type ComicSiteTraits struct {
 	SiteName string
 	SiteURL  string
 	ComicNum int
+}
+
+// Bucket gets or creataes a bucket in db.
+func (comicSite *ComicSiteTraits) Bucket() *bolt.Bucket {
+	bucket, err := db.GetComicSiteBucket(comicSite.SiteName)
+	CatchError(err)
+	return bucket
 }
 
 var verbose bool
